@@ -10,7 +10,6 @@ from clientes.models import Cliente
 from productos.models import Producto
 from cotizaciones.models import Cotizacion, DetalleCotizacion, ReglaOfertaAutomatica
 from impuestos.models import Impuesto, ProductoImpuesto
-from solicitudes.models import Solicitud
 
 User = get_user_model()
 
