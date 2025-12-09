@@ -521,10 +521,10 @@ const QuotationForm = () => {
                 setLoading(true);
                 const data = getValues();
 
-                // Preparar payload limpio (igual que onSubmit)
+                // 1. Guardar cambios del formulario primero (manteniendo estado actual o BORRADOR)
                 const payload = {
                     cliente: data.cliente?.value,
-                    estado: 'ENVIADA',
+                    estado: 'BORRADOR', // Guardamos como borrador primero para asegurar que los datos persistan antes de aprobar
                     notas: data.notas,
                     canal_preferencia: data.canal_preferencia,
                     detalles: data.detalles.map(d => ({
@@ -534,10 +534,24 @@ const QuotationForm = () => {
                         impuesto: d.impuesto
                     }))
                 };
-
-                // Actualizar estado a ENVIADA con datos limpios
                 await quotationsService.update(id, payload);
-                Swal.fire('¡Enviada!', 'La cotización ha sido aprobada y enviada.', 'success');
+
+                // 2. Ejecutar aprobación (Genera link, notificaciones, etc.)
+                const response = await quotationsService.approve(id);
+
+                Swal.fire({
+                    title: '¡Enviada!',
+                    text: 'La cotización ha sido aprobada y enviada.',
+                    icon: 'success',
+                    timer: 2000,
+                    showConfirmButton: false
+                });
+
+                // 3. Abrir WhatsApp si corresponde
+                if (response.whatsapp_link) {
+                    window.open(response.whatsapp_link, '_blank');
+                }
+
                 navigate('/cotizaciones');
             }
         } catch (err) {
