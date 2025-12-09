@@ -111,6 +111,13 @@ STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
+# Internationalization
+LANGUAGE_CODE = 'es-cl'
+TIME_ZONE = 'America/Santiago'
+USE_I18N = True
+USE_L10N = True
+USE_TZ = True
+
 # Media
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
