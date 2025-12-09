@@ -30,7 +30,9 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework_simplejwt',
     'corsheaders',
+    'corsheaders',
     'drf_spectacular',
+    'django_celery_beat',
     
     # Local apps
     'usuarios',
