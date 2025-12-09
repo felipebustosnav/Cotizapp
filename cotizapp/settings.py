@@ -103,7 +103,26 @@ DATABASES = {
             'charset': 'utf8mb4',
         },
     }
+    }
 }
+
+# Database configuration for Railway (Production)
+try:
+    import dj_database_url
+    
+    # Check for DATABASE_URL or MYSQL_URL
+    database_url = config('DATABASE_URL', default=None) or config('MYSQL_URL', default=None)
+    
+    if database_url:
+        DATABASES['default'] = dj_database_url.parse(database_url)
+        # Ensure engine is mysql
+        DATABASES['default']['ENGINE'] = 'django.db.backends.mysql'
+        DATABASES['default']['OPTIONS'] = {
+            'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
+            'charset': 'utf8mb4',
+        }
+except ImportError:
+    pass
 
 # Custom User Model
 AUTH_USER_MODEL = 'usuarios.Usuario'
