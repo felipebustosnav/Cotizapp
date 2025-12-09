@@ -1,0 +1,110 @@
+Proyecto Integrado: Aplicación de Cotización 
+Empresa Admi
+NOMBRE:Felipe Bustos
+CARRERA: Analista Programador
+ASIGNATURA: Proyecto Integrado
+PROFESOR:Sebastián Antonio López Duarte
+FECHA: 11/11/2025
+Fases del ciclo de vida del proyecto según la metodología SCRUM.
+La metodología escogida para el desarrollo de la aplicación es SCRUM, la cual no contempla un ciclo de vida lineal como lo podría ser un modelo en cascada, sino que es un ciclo iterativo de trabajo el cual contempla un incremento del software funcional por cada iteración realizada de los ciclos. El ciclo de trabajo mostrado en la Fig. 1 se define de la siguiente manera:
+Inicio y visión.
+En este punto se establecen los cimientos del proyecto, ya sea la visión de este, las entidades involucradas en el desarrollo de este y la definición de las funcionalidades y especificaciones que debe tener el proyecto. Todo esto ya ha sido abarcado en el primer informe del proyecto, sentando así las bases para el desarrollo de este.
+Planificación del sprint.
+Primer punto iterativo dentro del ciclo del proyecto, el cual está enfocado en la determinación de tareas que se abarcaran en el siguiente sprint de trabajo. De esta manera queda determinado lo que es el sprint Backlog y el objetivo del sprint.
+Implementación y desarrollo.
+Se construye el código que abarca las funcionalidades requeridas en el sprint backlog. Además, se hacen pruebas de este evitando que errores sean traspasados en el futuro. Obteniendo como resultado un incremento en el software entregable.
+Revisión del Sprint.
+Junto a los stakeholders se realiza una revisión del software desarrollado, obteniendo una validación por parte de los interesados.
+Retrospectiva del Sprint.
+Esta fase requiere que el equipo de desarrollo sea autocrítico y analice oportunidades de mejora que se hayan podido observar dentro del sprint ya acabado, de esta manera evitando que se sigan cometiendo acciones perjudiciales en Sprints siguientes.
+Cierre y lanzamiento.
+Cuando ya se pueda validar que el producto backlog está cubierto por el software realizado, llega el momento de realizar el lanzamiento del software, en donde ya se entrega el software terminado, en este caso a Admi.
+Planificación del proyecto.
+Se realizarán 2 sprint de dos semanas cada uno con un enfoque intensivo en las funcionalidades de prioridad alta, con el fin de obtener un producto mínimo viable en esta cantidad de tiempo.
+Sprint 1: En este se hará foco en el desarrollo del API Core y el Front-End Web MVP, cubriendo requisitos esenciales de mantenedores y el proceso de cotización.
+Sprint 2: Se complementarán las funcionalidades avanzadas como reportes y autoatención, y se realizará el Front-End móvil.
+Carta Gantt y ruta crítica.
+La ruta crítica se guiará por las funcionalidades de prioridad alta que tengan dependencias con otras del mismo nivel de prioridad, esto debido a que los diferentes front-end que existan dependen de que la API esté en completo funcionamiento.
+Fase 1: Configuración de BD escalable (RNF2), API de Usuarios/Roles (RF4, RF5).
+Fase 2: API de Productos/Clientes (RF1, RF2, RF6), API de Generación PDF (RF7, RF8).
+Fase 3: Desarrollo de UI para Login, Mantenedores (Prod/Clientes) y Proceso de Cotización.
+Fase 4: API de Reportes (RF13, RF14), API de Enlace Autoatención (RF15), Seguridad (Ley 21.633).
+Fase 5: Desarrollo de App Móvil (Login, Cotización), Pruebas de Sistema.
+Fase 6: Documentación final, Retrospectiva, Despliegue en Producción.
+Kanban en Jira.
+Se ha optado por la utilización de una plataforma digital para la mantención del estado del proyecto. La plataforma seleccionada es Jira, con la cual se pueden manejar las diferentes historias de usuario, creación de subtareas y la organización de un tablero Kanban. El tablero se puede apreciar en la Figura 2. 
+Figura 2: Tablero Kanban desarrollado en Jira
+Product Backlog (General): Esta columna contendrá todas las HU que no son críticas para la versión inicial (Prioridad Media o Baja) y las que se abordarán más tarde.
+Sprint 1 Backlog: Foco en la base del sistema (Usuarios, Productos, Clientes) y el proceso central de cotización. Todas estas son de Prioridad Alta.
+Sprint 2 Backlog: Foco en las funcionalidades de Análisis (Reportes), la App Móvil y la Autoatención. Las de reporte son de Prioridad Alta .
+Las columnas de En desarrollo, En pruebas y Terminado, son muy descriptivas de lo que contendrán, ya que dentro de cada una irán las historias de usuario que se encuentren ya sea en desarrollo, en pruebas o terminadas (ya implementadas).
+Paradigma 4+1.
+Vistas lógicas
+Diagrama de clases.
+Figura 3: Diagrama de Clases
+Diagramas de secuencia. 
+Diagramas de comunicación.
+Vista de proceso.
+Diagramas de actividad.
+Vista de desarrollo.
+Diagrama de componentes.
+Figura 16: Diagrama de Componentes
+Diagrama de paquetes.
+Vista física.
+Diagrama de despliegue.	
+Vista escenarios
+Diagramas casos de uso.
+Diagrama caso de uso general.
+Diagramas casos de uso específicos.
+Requerimiento de infraestructura y diagrama de red.
+Requerimiento de infraestructura.
+Para la correcta implementación del sistema CotizApp se pueden tomar dos posibles caminos. El primero es la utilización de proveedores de esta en la nube como lo son AWS, Google Cloud, Microsoft Azure e incluso la misma empresa Admi, la cual cuenta con este tipo de soluciones. El segundo posible camino por escoger, sería implementar los servidores necesarios manualmente para lo cual se necesitaría lo siguiente:
+Para el backend:
+Servidor de Aplicaciones:
+Sistema operativo: Ubuntu Server 22.04LTS
+Framework: Django REST Framework (Python 3.12)
+Servidor Web: Nginx + Gunicorn
+RAM: 4 GB mínimo
+CPU: 2vCPUs
+Disco: 50 GB SSD
+Servidor Base de datos:
+Sistema gestor: MySQL 8.0
+RAM: 4GB
+CPU: 2 vCPUs
+Almacenamiento: 100GB SSD
+Respaldo automático diario
+Para el Frontend web:
+Framwork: ReactJS
+Hosting: Nginx/Vercel/Netlify/Admi
+Requisito mínimo cliente: navegador actualizado.
+Aplicación Móvil:
+Lenguaje: Kotlin(Android)
+Almacenamiento local disponible para datos temporales
+Mínimo android 9
+Red y seguridad:
+Firewall habilitado.
+Autenticación JWT para las solicitudes a la API
+Todas estas especificaciones son necesarias para cumplir con requisitos de rapidez en la respuesta de la aplicación y a su vez satisfacer la necesidad de almacenamiento que esta requiere.
+Diagrama de red.
+Tal como se aprecia en la Figura 23, la parte del cliente (sector azul) necesita de un dispositivo ya sea estático o móvil para acceder a CotizApp. Los servidores (ya sean propios o contratados en la nube) recibirán y devolverán peticiones a través de internet. Cada servidor estará alojando diferentes servicios estando conectados entre si para poder entregar respuesta.
+Figura 23:Diagrama de red CotizApp
+Modelo entidad-relación.
+Ambientes de seguridad.
+El ambiente de seguridad de CotizApp establece las políticas, medidas y mecanismos necesarios para garantizar la confidencialidad, integridad y disponibilidad de la información que maneja el sistema. Dado que el proyecto contempla el uso de una arquitectura basada en servicios web y aplicaciones móviles, se han definido controles de seguridad tanto a nivel lógico como de infraestructura.
+Autenticación y Autorización
+El acceso al sistema está restringido mediante credenciales personales, utilizando contraseñas cifradas bajo algoritmos de hashing.
+Se implementa un esquema de control de acceso según roles, que delimita las acciones permitidas según el tipo de usuario:
+Administrador: acceso total al sistema, incluyendo la gestión de usuarios, productos, cotizaciones y reportes.
+Empleado: acceso restringido a las funcionalidades de creación, edición y consulta de cotizaciones.
+Cliente: acceso público limitado a la creación de cotizaciones, sin capacidad de edición ni almacenamiento persistente.
+Comunicación Segura
+Todas las comunicaciones entre los distintos componentes del sistema (frontend web, aplicación móvil y backend) se realizan bajo el protocolo HTTPS, asegurando la transmisión cifrada de los datos mediante certificados SSL/TLS.
+Esto protege la información sensible frente a ataques de interceptación o manipulación durante el tránsito.
+Protección de Datos
+Las contraseñas de los usuarios se almacenan cifradas en la base de datos, evitando el acceso a información en texto plano. Se realizan copias de seguridad automáticas de la base de datos con frecuencia establecida, para garantizar la recuperación ante fallas o pérdidas de información.
+Seguridad de Red
+La infraestructura lógica está segmentada en capas, de manera que los servidores internos (como la base de datos) no se exponen directamente a Internet.
+Se aplican políticas de control de puertos y filtrado de tráfico mediante firewalls, así como el uso de Cloudflare u otros servicios de seguridad perimetral para mitigar ataques de denegación de servicio (DDoS) y otras amenazas comunes.
+Gestión de Sesiones
+El sistema utiliza tokens JWT (JSON Web Tokens) para el manejo de sesiones seguras, permitiendo la autenticación sin necesidad de almacenar credenciales en el cliente.
+Las sesiones cuentan con tiempos de expiración controlados y se invalidan automáticamente ante cualquier intento de uso indebido o caducidad del token.
