@@ -33,6 +33,10 @@ def enviar_correo_cotizacion(cotizacion_id):
         if empresa.logo:
             logo_html = f'<img src="cid:{logo_cid}" alt="{escape(empresa.nombre)}" style="max-width: 200px; height: auto;" />'
         
+        # Construir link al portal de revisión
+        base_url = getattr(settings, 'FRONTEND_URL', 'http://localhost:3000').rstrip('/')
+        public_link = f"{base_url}/cotizacion/{cotizacion.uuid}"
+
         if empresa.mensaje_correo_cotizacion:
             # Reemplazar variables básicas si existen en el texto
             mensaje_texto = empresa.mensaje_correo_cotizacion.format(
@@ -40,10 +44,16 @@ def enviar_correo_cotizacion(cotizacion_id):
                 cotizacion_numero=cotizacion.numero,
                 empresa_nombre=empresa.nombre,
                 total=f"${cotizacion.total:,.0f}",
-                empresa_logo=logo_html
+                empresa_logo=logo_html,
+                link_revision=f'<a href="{public_link}">Revisar y Aceptar Cotización</a>'
             )
             # Convertir saltos de línea a <br> para HTML
             mensaje_html = mensaje_texto.replace('\n', '<br>')
+            
+            # Si el usuario no usó la variable {link_revision}, lo agregamos al final por seguridad
+            if '{link_revision}' not in empresa.mensaje_correo_cotizacion:
+                 mensaje_html += f'<br><br><p>Puede revisar, descargar y aceptar su cotización en el siguiente enlace:<br><a href="{public_link}">{public_link}</a></p>'
+
         else:
             # Mensaje por defecto (sin logo, el usuario puede agregarlo con {empresa_logo})
             mensaje_html = f"""
@@ -51,6 +61,11 @@ def enviar_correo_cotizacion(cotizacion_id):
             <p>Adjunto encontrará la cotización <strong>#{cotizacion.numero}</strong> solicitada.</p>
             <p><strong>Detalles:</strong><br>
             Total: ${cotizacion.total:,.0f}</p>
+            
+            <p>Puede revisar y aceptar esta cotización online aquí:<br>
+            <a href="{public_link}" style="display:inline-block; background-color:#F97316; color:white; padding:10px 20px; text-decoration:none; border-radius:5px; font-weight:bold;">Revisar Cotización</a>
+            </p>
+            
             <p>Atte,<br>
             {escape(empresa.nombre)}<br>
             {escape(empresa.direccion)}<br>

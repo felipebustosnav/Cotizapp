@@ -13,6 +13,14 @@ class CotizacionViewSet(viewsets.ModelViewSet):
     """
     ViewSet para gestión de cotizaciones.
     """
+    
+    def update(self, request, *args, **kwargs):
+        """Restringe edición de cotizaciones finalizadas"""
+        cotizacion = self.get_object()
+        if cotizacion.estado in ['ACEPTADA', 'RECHAZADA']:
+            if not request.user.is_superuser and request.user.rol != 'ADMIN':
+                 raise ValidationError("No puedes modificar una cotización finalizada.")
+        return super().update(request, *args, **kwargs)
     queryset = Cotizacion.objects.all()
     serializer_class = CotizacionSerializer
     permission_classes = [permissions.IsAuthenticated]
@@ -186,10 +194,23 @@ class CotizacionViewSet(viewsets.ModelViewSet):
                 # Codificar mensaje para URL
                 from urllib.parse import quote
                 
-                # Generar link de descarga público
-                download_link = request.build_absolute_uri(f'/api/cotizaciones/download_public/?uuid={cotizacion.uuid}')
+                # Generar link al portal de revisión público (Frontend)
+                # Asumimos que el frontend corre en el mismo dominio base o está configurado
+                # Construimos la URL al frontend: /cotizacion/{uuid}
+                # request.build_absolute_uri('/') nos da la base.
                 
-                mensaje_final = f"{mensaje_base} Puede descargarla aquí: {download_link}"
+                # Obtener la base URL del frontend (idealmente de settings, pero por ahora inferimos o hardcodeamos para dev)
+                # Si estamos en dev django corre en 8000, react en 3000.
+                # Para producción, suele ser el mismo dominio.
+                # Usaremos una variable de entorno o settings, pero por simplicidad construiremos relativo a la petición actual
+                # cambiada al puerto del frontend si es necesario, o asumimos root.
+                
+                # Estrategia: Usar una URL explicita si está definida en settings, sino construirla.
+                from django.conf import settings
+                base_url = getattr(settings, 'FRONTEND_URL', request.build_absolute_uri('/')).rstrip('/')
+                public_link = f"{base_url}/cotizacion/{cotizacion.uuid}"
+                
+                mensaje_final = f"{mensaje_base} Puede revisarla y aceptarla aquí: {public_link}"
                 mensaje_encoded = quote(mensaje_final)
                 
                 response_data['whatsapp_link'] = f"https://wa.me/{telefono}?text={mensaje_encoded}"
@@ -271,3 +292,70 @@ class CotizacionViewSet(viewsets.ModelViewSet):
                 {'error': 'Cotización no encontrada o error al generar PDF'},
                 status=status.HTTP_404_NOT_FOUND
             )
+
+    @action(detail=True, methods=['post'])
+    def marcar_aceptada(self, request, pk=None):
+        """
+        Acción manual para que un Admin/Empleado marque como ACEPTADA.
+        """
+        cotizacion = self.get_object()
+        
+        # Opcional: Validar que esté enviada
+        if cotizacion.estado != Cotizacion.Estado.ENVIADA:
+            # Podríamos ser flexibles o estrictos. Seremos flexibles pero warning si es borrador.
+             pass
+
+        cotizacion.estado = 'ACEPTADA' # Usar literal o Cotizacion.Estado.ACEPTADA si está definido
+        cotizacion.save()
+        
+        return Response({'message': 'Cotización marcada como aceptada manualmente'})
+
+    # --- Acciones Públicas (Cliente) ---
+
+    @action(detail=False, methods=['get'], permission_classes=[permissions.AllowAny])
+    def public_detail(self, request):
+        """Detalle público de la cotización por UUID"""
+        uuid_str = request.query_params.get('uuid')
+        if not uuid_str:
+            return Response({'error': 'UUID requerido'}, status=status.HTTP_400_BAD_REQUEST)
+            
+        from django.shortcuts import get_object_or_404
+        cotizacion = get_object_or_404(Cotizacion, uuid=uuid_str)
+        
+        # Serializamos con el serializer completo para mostrar items
+        serializer = CotizacionSerializer(cotizacion)
+        return Response(serializer.data)
+
+    @action(detail=False, methods=['post'], permission_classes=[permissions.AllowAny])
+    def public_accept(self, request):
+        """Cliente acepta la cotización públicamente por UUID"""
+        uuid_str = request.data.get('uuid')
+        if not uuid_str:
+            return Response({'error': 'UUID requerido'}, status=status.HTTP_400_BAD_REQUEST)
+            
+        from django.shortcuts import get_object_or_404
+        cotizacion = get_object_or_404(Cotizacion, uuid=uuid_str)
+        
+        if cotizacion.estado in ['ACEPTADA', 'RECHAZADA']:
+             return Response({'error': f'La cotización ya está {cotizacion.estado.lower()}'}, status=status.HTTP_400_BAD_REQUEST)
+
+        cotizacion.estado = 'ACEPTADA'
+        cotizacion.save()
+        return Response({'message': 'Cotización aceptada exitosamente'})
+
+    @action(detail=False, methods=['post'], permission_classes=[permissions.AllowAny])
+    def public_reject(self, request):
+        """Cliente rechaza la cotización públicamente por UUID"""
+        uuid_str = request.data.get('uuid')
+        if not uuid_str:
+            return Response({'error': 'UUID requerido'}, status=status.HTTP_400_BAD_REQUEST)
+            
+        from django.shortcuts import get_object_or_404
+        cotizacion = get_object_or_404(Cotizacion, uuid=uuid_str)
+        
+        if cotizacion.estado in ['ACEPTADA', 'RECHAZADA']:
+             return Response({'error': f'La cotización ya está {cotizacion.estado.lower()}'}, status=status.HTTP_400_BAD_REQUEST)
+             
+        cotizacion.estado = 'RECHAZADA'
+        cotizacion.save()
+        return Response({'message': 'Cotización rechazada'})
