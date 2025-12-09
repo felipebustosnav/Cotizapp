@@ -1,0 +1,296 @@
+/* ===================================
+   CotizApp - Componentes Globales
+   =================================== */
+
+/* ===== Botones ===== */
+.btn-custom {
+    padding: 12px 24px;
+    font-size: var(--text-base);
+    font-weight: var(--font-semibold);
+    border-radius: var(--radius-md);
+    border: none;
+    cursor: pointer;
+    transition: all var(--transition-base);
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    text-decoration: none;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, var(--primary-orange), var(--accent-coral));
+    color: var(--white);
+    box-shadow: var(--shadow-sm);
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+    color: var(--white);
+}
+
+.btn-secondary {
+    background-color: var(--white);
+    color: var(--primary-orange);
+    border: 2px solid var(--primary-orange);
+}
+
+.btn-secondary:hover {
+    background-color: var(--primary-orange);
+    color: var(--white);
+}
+
+.btn-success {
+    background-color: var(--success-green);
+    color: var(--white);
+}
+
+.btn-danger {
+    background-color: var(--danger-red);
+    color: var(--white);
+}
+
+.btn-lg {
+    padding: 16px 32px;
+    font-size: var(--text-lg);
+}
+
+.btn-sm {
+    padding: 8px 16px;
+    font-size: var(--text-sm);
+}
+
+/* ===== Cards ===== */
+.card-custom {
+    background-color: var(--white);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-sm);
+    padding: var(--spacing-lg);
+    transition: box-shadow var(--transition-base);
+}
+
+.card-custom:hover {
+    box-shadow: var(--shadow-md);
+}
+
+.card-header-custom {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--spacing-md);
+    padding-bottom: var(--spacing-md);
+    border-bottom: 2px solid var(--gray-200);
+}
+
+.card-stat {
+    background: linear-gradient(135deg, var(--primary-orange), var(--accent-coral));
+    color: var(--white);
+    padding: var(--spacing-xl);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-md);
+}
+
+.card-stat-number {
+    font-size: var(--text-4xl);
+    font-weight: var(--font-bold);
+    font-family: var(--font-headings);
+    margin-bottom: var(--spacing-xs);
+}
+
+.card-stat-label {
+    font-size: var(--text-base);
+    opacity: 0.9;
+    font-weight: var(--font-medium);
+}
+
+/* ===== Badges ===== */
+.badge-custom {
+    padding: 6px 12px;
+    border-radius: var(--radius-full);
+    font-size: var(--text-sm);
+    font-weight: var(--font-semibold);
+    display: inline-block;
+}
+
+.badge-success {
+    background-color: var(--success-green);
+    color: var(--white);
+}
+
+.badge-warning {
+    background-color: var(--warning-yellow);
+    color: var(--text-dark);
+}
+
+.badge-danger {
+    background-color: var(--danger-red);
+    color: var(--white);
+}
+
+.badge-info {
+    background-color: var(--info-blue);
+    color: var(--white);
+}
+
+.badge-secondary {
+    background-color: var(--gray-300);
+    color: var(--text-dark);
+}
+
+/* ===== Formularios ===== */
+.form-group-custom {
+    margin-bottom: var(--spacing-lg);
+}
+
+.form-label-custom {
+    display: block;
+    font-weight: var(--font-semibold);
+    margin-bottom: var(--spacing-xs);
+    color: var(--text-dark);
+}
+
+.form-control-custom {
+    width: 100%;
+    padding: 12px 16px;
+    font-size: var(--text-base);
+    border: 2px solid var(--gray-300);
+    border-radius: var(--radius-md);
+    transition: border-color var(--transition-fast);
+    font-family: var(--font-primary);
+}
+
+.form-control-custom:focus {
+    outline: none;
+    border-color: var(--primary-orange);
+    box-shadow: 0 0 0 3px rgba(255, 107, 53, 0.1);
+}
+
+.form-error {
+    color: var(--danger-red);
+    font-size: var(--text-sm);
+    margin-top: var(--spacing-xs);
+}
+
+/* ===== Tablas ===== */
+.table-custom {
+    width: 100%;
+    background-color: var(--white);
+    border-radius: var(--radius-md);
+    /* overflow: hidden;  <-- Causing dropdown clipping */
+    overflow: visible;
+    box-shadow: var(--shadow-sm);
+}
+
+.table-custom td {
+    overflow: visible;
+}
+
+.table-custom thead {
+    background: linear-gradient(135deg, var(--primary-orange), var(--accent-coral));
+    color: var(--white);
+}
+
+.table-custom th {
+    padding: 16px;
+    text-align: left;
+    font-weight: var(--font-semibold);
+    font-size: var(--text-sm);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.table-custom td {
+    padding: 16px;
+    border-bottom: 1px solid var(--gray-200);
+}
+
+.table-custom tbody tr:hover {
+    background-color: var(--gray-50);
+}
+
+.table-custom tbody tr:last-child td {
+    border-bottom: none;
+}
+
+/* ===== Loading Spinner ===== */
+.spinner {
+    border: 3px solid var(--gray-200);
+    border-top: 3px solid var(--primary-orange);
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+.loading-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+}
+
+/* ===== Alertas ===== */
+.alert-custom {
+    padding: var(--spacing-md) var(--spacing-lg);
+    border-radius: var(--radius-md);
+    margin-bottom: var(--spacing-lg);
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+}
+
+.alert-success {
+    background-color: rgba(6, 214, 160, 0.1);
+    border-left: 4px solid var(--success-green);
+    color: var(--success-green);
+}
+
+.alert-danger {
+    background-color: rgba(230, 57, 70, 0.1);
+    border-left: 4px solid var(--danger-red);
+    color: var(--danger-red);
+}
+
+.alert-warning {
+    background-color: rgba(255, 182, 39, 0.1);
+    border-left: 4px solid var(--warning-yellow);
+    color: #B8860B;
+}
+
+.alert-info {
+    background-color: rgba(74, 144, 226, 0.1);
+    border-left: 4px solid var(--info-blue);
+    color: var(--info-blue);
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 768px) {
+    .card-stat-number {
+        font-size: var(--text-3xl);
+    }
+
+    .table-custom {
+        font-size: var(--text-sm);
+    }
+
+    .table-custom th,
+    .table-custom td {
+        padding: 12px;
+    }
+}

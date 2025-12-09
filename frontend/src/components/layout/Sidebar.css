@@ -1,0 +1,153 @@
+/* Sidebar Styles */
+.sidebar {
+    position: fixed;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: var(--sidebar-width);
+    background-color: var(--white);
+    box-shadow: var(--shadow-md);
+    display: flex;
+    flex-direction: column;
+    z-index: 2000;
+    transition: transform var(--transition-base);
+}
+
+.sidebar-logo {
+    padding: var(--spacing-xl) var(--spacing-lg);
+    border-bottom: 2px solid var(--gray-200);
+}
+
+.sidebar-logo h1 {
+    font-size: var(--text-2xl);
+    background: linear-gradient(135deg, var(--primary-orange), var(--accent-coral));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: var(--spacing-xs);
+}
+
+.sidebar-logo-img {
+    max-width: 100%;
+    max-height: 50px;
+    object-fit: contain;
+    display: block;
+    margin: 0 auto;
+}
+
+.sidebar-company {
+    font-size: var(--text-sm);
+    color: var(--gray-600);
+    font-weight: var(--font-medium);
+}
+
+.sidebar-nav {
+    flex: 1;
+    padding: var(--spacing-lg) 0;
+    overflow-y: auto;
+}
+
+.sidebar-item {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+    padding: var(--spacing-md) var(--spacing-lg);
+    color: var(--text-dark);
+    text-decoration: none;
+    transition: all var(--transition-fast);
+    font-weight: var(--font-medium);
+    border-left: 3px solid transparent;
+}
+
+.sidebar-item:hover {
+    background-color: var(--gray-50);
+    color: var(--primary-orange);
+}
+
+.sidebar-item-active {
+    background-color: rgba(255, 107, 53, 0.1);
+    color: var(--primary-orange);
+    border-left-color: var(--primary-orange);
+}
+
+.sidebar-user {
+    padding: var(--spacing-lg);
+    border-top: 2px solid var(--gray-200);
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+}
+
+.sidebar-user-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--primary-orange), var(--accent-coral));
+    color: var(--white);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: var(--font-bold);
+    font-size: var(--text-sm);
+}
+
+.sidebar-user-info {
+    flex: 1;
+}
+
+.sidebar-user-name {
+    font-weight: var(--font-semibold);
+    font-size: var(--text-sm);
+    margin-bottom: 2px;
+}
+
+.sidebar-user-role {
+    font-size: var(--text-xs);
+    color: var(--gray-600);
+}
+
+/* Botón hamburguesa (móvil) */
+.sidebar-toggle {
+    display: none;
+    position: fixed;
+    top: var(--spacing-md);
+    left: var(--spacing-md);
+    z-index: 1001;
+    background-color: var(--white);
+    border: none;
+    padding: var(--spacing-sm);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-md);
+    cursor: pointer;
+    color: var(--primary-orange);
+}
+
+.sidebar-overlay {
+    display: none;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .sidebar {
+        transform: translateX(-100%);
+    }
+
+    .sidebar-open {
+        transform: translateX(0);
+    }
+
+    .sidebar-toggle {
+        display: block;
+    }
+
+    .sidebar-overlay {
+        display: block;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: rgba(0, 0, 0, 0.5);
+        z-index: 999;
+    }
+}
