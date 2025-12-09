@@ -103,7 +103,6 @@ DATABASES = {
             'charset': 'utf8mb4',
         },
     }
-    }
 }
 
 # Database configuration for Railway (Production)
