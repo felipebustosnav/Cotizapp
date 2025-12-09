@@ -41,7 +41,7 @@ const QuotationForm = () => {
     const [newClient, setNewClient] = useState({ nombre: '', rut: '', email: '', telefono: '', direccion: '' });
     const [clientModalError, setClientModalError] = useState('');
 
-    const { register, control, handleSubmit, watch, setValue, reset, formState: { errors } } = useForm({
+    const { register, control, handleSubmit, watch, setValue, reset, getValues, formState: { errors } } = useForm({
         defaultValues: {
             cliente: null, // Cambiado a objecto o null para react-select
             fecha_vencimiento: new Date(Date.now() + 15 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], // 15 días por defecto
@@ -478,48 +478,77 @@ const QuotationForm = () => {
 
     const handleApproveRequest = async () => {
         try {
-            const result = await Swal.fire({
-                title: '¿Aprobar cambios?',
-                text: "Se actualizará la cotización con los datos propuestos.",
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: 'var(--success-green)',
-                confirmButtonText: 'Sí, aprobar'
-            });
-
-            if (result.isConfirmed) {
-                setLoading(true);
-                await requestsService.approve(requestId);
-                Swal.fire('Aprobado', 'Cambios aplicados exitosamente.', 'success');
-                navigate('/solicitudes');
-            }
-        } catch (error) {
-            Swal.fire('Error', 'No se pudo aprobar la solicitud.', 'error');
+            setLoading(true);
+            await requestsService.resolve(requestId, 'APROBADA', 'Aprobado por usuario');
+            Swal.fire('¡Aprobado!', 'La solicitud ha sido aprobada y los cambios aplicados.', 'success');
+            navigate('/solicitudes');
+        } catch (err) {
+            console.error(err);
+            Swal.fire('Error', 'No se pudo aprobar la solicitud', 'error');
         } finally {
             setLoading(false);
         }
     };
 
     const handleRejectRequest = async () => {
-        const { value: motivo } = await Swal.fire({
-            title: 'Rechazar Solicitud',
-            input: 'textarea',
-            inputLabel: 'Motivo del rechazo',
-            showCancelButton: true,
-            confirmButtonColor: 'var(--danger-red)'
-        });
+        try {
+            setLoading(true);
+            await requestsService.resolve(requestId, 'RECHAZADA', 'Rechazado por usuario');
+            Swal.fire('Rechazado', 'La solicitud ha sido rechazada.', 'info');
+            navigate('/solicitudes');
+        } catch (err) {
+            console.error(err);
+            Swal.fire('Error', 'No se pudo rechazar la solicitud', 'error');
+        } finally {
+            setLoading(false);
+        }
+    };
 
-        if (motivo) {
-            try {
+    // --- Handlers para Revisión de Cotización (Approval Mode) ---
+    const handleApproveQuotation = async () => {
+        try {
+            const result = await Swal.fire({
+                title: '¿Confirmar Envío?',
+                text: "La cotización pasará a estado ENVIADA.",
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: 'var(--success-green)',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Sí, Aprobar y Enviar'
+            });
+
+            if (result.isConfirmed) {
                 setLoading(true);
-                await requestsService.reject(requestId, motivo);
-                Swal.fire('Rechazado', 'Solicitud rechazada.', 'success');
-                navigate('/solicitudes');
-            } catch (error) {
-                Swal.fire('Error', 'No se pudo rechazar.', 'error');
-            } finally {
-                setLoading(false);
+                // Actualizar estado a ENVIADA
+                await quotationsService.update(id, { ...getValues(), estado: 'ENVIADA' });
+                Swal.fire('¡Enviada!', 'La cotización ha sido aprobada y enviada.', 'success');
+                navigate('/cotizaciones');
             }
+        } catch (err) {
+            console.error(err);
+            Swal.fire('Error', 'No se pudo aprobar el envío', 'error');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleRejectQuotation = async () => {
+        try {
+            const result = await Swal.fire({
+                title: '¿Rechazar?',
+                text: "La cotización permanecerá en borrador.",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Sí, Rechazar'
+            });
+
+            if (result.isConfirmed) {
+                navigate('/cotizaciones');
+            }
+        } catch (err) {
+            console.error(err);
         }
     };
 
@@ -857,6 +886,18 @@ const QuotationForm = () => {
                             </button>
                             <button type="button" className="btn-custom btn-success" onClick={handleApproveRequest} disabled={loading} style={{ backgroundColor: 'var(--success-green)', color: 'white' }}>
                                 <FiCheck size={20} /> Aprobar Cambios
+                            </button>
+                        </div>
+                    ) : isApprovalMode ? (
+                        <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '15px', marginTop: '30px', paddingTop: '20px', borderTop: '1px solid var(--gray-200)' }}>
+                            <button type="button" className="btn-custom btn-secondary" onClick={() => navigate('/cotizaciones')}>
+                                Cancelar
+                            </button>
+                            <button type="button" className="btn-custom btn-danger" onClick={handleRejectQuotation} disabled={loading} style={{ backgroundColor: '#ef4444', color: 'white' }}>
+                                <FiX size={20} /> Rechazar/Corregir
+                            </button>
+                            <button type="button" className="btn-custom btn-success" onClick={handleApproveQuotation} disabled={loading} style={{ backgroundColor: 'var(--success-green)', color: 'white' }}>
+                                <FiCheck size={20} /> Aprobar y Enviar (Demo)
                             </button>
                         </div>
                     ) : (
