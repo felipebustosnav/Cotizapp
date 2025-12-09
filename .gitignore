@@ -48,6 +48,31 @@ node_modules/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+# Project Specific Garbage
+test_*.py
+debug_*.py
+extract_*.py
+fix_*.py
+check_message.py
+setup_helper.py
+reset_admin.py
+populate_data.py
+simple_test_email.py
+*.docx
+*.bak
+*.dat
+*.dir
+create_database.sql
+QuotationList_backup.jsx
+informe*.txt
+INSTRUCCIONES_*.md
+*INSTRUCTIONS.md
+Debugging UI and Logic.md
+USUARIOS.md
+conversa.md
+conversacion.md
+frontend_package.json
 /frontend/build
 /frontend/.pnp
 /frontend/.pnp.js
