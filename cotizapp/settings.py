@@ -95,10 +95,13 @@ DATABASES = {
     }
 }
 
-# Override with DATABASE_URL if present (e.g., Railway/Render)
-if config('DATABASE_URL', default=None):
+# Override with DATABASE_URL or MYSQL_URL if present (e.g., Railway/Render)
+# Railway often exposes MYSQL_URL for MySQL services
+database_url = config('DATABASE_URL', default=None) or config('MYSQL_URL', default=None)
+
+if database_url:
     DATABASES['default'] = dj_database_url.config(
-        default=config('DATABASE_URL'),
+        default=database_url,
         conn_max_age=600,
         ssl_require=True
     )

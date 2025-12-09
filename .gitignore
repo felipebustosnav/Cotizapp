@@ -66,6 +66,7 @@ simple_test_email.py
 create_database.sql
 QuotationList_backup.jsx
 informe*.txt
+test_*.txt
 INSTRUCCIONES_*.md
 *INSTRUCTIONS.md
 Debugging UI and Logic.md
