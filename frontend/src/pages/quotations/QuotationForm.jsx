@@ -519,8 +519,24 @@ const QuotationForm = () => {
 
             if (result.isConfirmed) {
                 setLoading(true);
-                // Actualizar estado a ENVIADA
-                await quotationsService.update(id, { ...getValues(), estado: 'ENVIADA' });
+                const data = getValues();
+
+                // Preparar payload limpio (igual que onSubmit)
+                const payload = {
+                    cliente: data.cliente?.value,
+                    estado: 'ENVIADA',
+                    notas: data.notas,
+                    canal_preferencia: data.canal_preferencia,
+                    detalles: data.detalles.map(d => ({
+                        producto: d.producto_id?.value,
+                        cantidad: d.cantidad,
+                        precio_unitario: d.precio_unitario,
+                        impuesto: d.impuesto
+                    }))
+                };
+
+                // Actualizar estado a ENVIADA con datos limpios
+                await quotationsService.update(id, payload);
                 Swal.fire('¡Enviada!', 'La cotización ha sido aprobada y enviada.', 'success');
                 navigate('/cotizaciones');
             }
