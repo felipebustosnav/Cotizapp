@@ -184,10 +184,10 @@ if AWS_ACCESS_KEY_ID:
     DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
     STATICFILES_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
     
-    # URLs for S3
-    AWS_S3_CUSTOM_DOMAIN = f'{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com'
-    STATIC_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/static/'
-    MEDIA_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/media/'
+    # Let boto3 generate the correct signed URLs
+    # AWS_S3_CUSTOM_DOMAIN = f'{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com'
+    # STATIC_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/static/'
+    # MEDIA_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/media/'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
