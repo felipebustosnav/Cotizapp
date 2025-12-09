@@ -216,7 +216,7 @@ class Command(BaseCommand):
                 
                 # Si está decidida (Aceptada/Rechazada), poner datos de decisión
                 if estado in [Cotizacion.Estado.ACEPTADA, Cotizacion.Estado.RECHAZADA]:
-                    cot.usuario_decision = cliente.nombre # Hack visual, o dejar Null
+                    cot.usuario_decision = admin # Usar el admin como decisor
                     cot.fecha_decision = current_date + timedelta(days=random.randint(1, 10))
                 
                 cot.save()
