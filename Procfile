@@ -1,3 +1,3 @@
 web: python manage.py migrate && gunicorn cotizapp.wsgi --log-file -
-worker: celery -A cotizapp worker -l info
+worker: celery -A cotizapp worker -l info --concurrency=4
 beat: celery -A cotizapp beat -l info --scheduler django_celery_beat.schedulers:DatabaseScheduler
