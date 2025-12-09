@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'cotizaciones',
     'impuestos',
     'reportes',
+    'solicitudes',
 ]
 
 # Try to import optional deployment modules (Production)
