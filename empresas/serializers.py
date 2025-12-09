@@ -22,6 +22,11 @@ class EmpresaSerializer(serializers.ModelSerializer):
     def get_logo_url(self, obj):
         """Retorna la URL completa del logo"""
         if obj.logo:
+            # Si ya es una URL completa (ej: S3), retornarla directo
+            if obj.logo.url.startswith('http'):
+                return obj.logo.url
+            
+            # Si es local, construir la URI absoluta
             request = self.context.get('request')
             if request:
                 return request.build_absolute_uri(obj.logo.url)
