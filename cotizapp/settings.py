@@ -213,6 +213,13 @@ CORS_ALLOWED_ORIGINS = [
     "http://127.0.0.1:8080",
 ]
 
+# Add production domains from environment
+cors_origins = config('CORS_ALLOWED_ORIGINS', default=None)
+if cors_origins:
+    CORS_ALLOWED_ORIGINS.extend(cors_origins.split(','))
+
+CSRF_TRUSTED_ORIGINS = CORS_ALLOWED_ORIGINS
+
 CORS_ALLOW_CREDENTIALS = True
 
 # DRF Spectacular Configuration (API Documentation)
