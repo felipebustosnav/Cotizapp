@@ -30,9 +30,7 @@ class ImpuestoViewSet(viewsets.ModelViewSet):
         return ImpuestoSerializer
 
     def get_permissions(self):
-        """Solo administradores pueden modificar"""
-        if self.action in ['create', 'update', 'partial_update', 'destroy']:
-            return [permissions.IsAuthenticated(), IsAdministrador()]
+        """Todos los empleados autenticados de la empresa pueden modificar"""
         return [permissions.IsAuthenticated(), IsSameEmpresa()]
 
     def create(self, request, *args, **kwargs):

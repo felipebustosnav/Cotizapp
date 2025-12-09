@@ -1,10 +1,10 @@
-from rest_framework import status
+from rest_framework import status, permissions
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework.permissions import AllowAny
 from django.db import transaction
 from django.contrib.auth import get_user_model
 from empresas.models import Empresa
+from .serializers import ChangePasswordSerializer
 
 User = get_user_model()
 
@@ -12,7 +12,7 @@ class RegisterCompanyView(APIView):
     """
     Vista pública para registrar una nueva empresa y su usuario administrador.
     """
-    permission_classes = [AllowAny]
+    permission_classes = [permissions.AllowAny]
     
     def post(self, request):
         data = request.data
@@ -71,3 +71,26 @@ class RegisterCompanyView(APIView):
                 {'detail': f'Error al registrar empresa: {str(e)}'},
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )
+class ChangePasswordView(APIView):
+    """
+    Vista para cambiar la contraseña.
+    Requiere autenticación.
+    """
+    permission_classes = [permissions.IsAuthenticated]
+    
+    def post(self, request):
+        user = request.user
+        serializer = ChangePasswordSerializer(data=request.data)
+        
+        if serializer.is_valid():
+            # Verificar password anterior
+            if not user.check_password(serializer.data.get("old_password")):
+                return Response({"old_password": ["La contraseña actual es incorrecta."]}, status=status.HTTP_400_BAD_REQUEST)
+            
+            # Setear nueva password
+            user.set_password(serializer.data.get("new_password"))
+            user.cambio_password_obligatorio = False
+            user.save()
+            return Response({"message": "Contraseña actualizada correctamente."}, status=status.HTTP_200_OK)
+        
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

@@ -34,6 +34,13 @@ class Cotizacion(models.Model):
         
     canal_preferencia = models.CharField('Canal de preferencia', max_length=10, choices=Canal.choices, default=Canal.EMAIL)
     notas = models.TextField('Notas', blank=True)
+    motivo_rechazo = models.TextField('Motivo de rechazo', blank=True, null=True)
+    
+    # Trazabilidad de decisión (Borrador -> Enviada/Rechazada)
+    usuario_decision = models.ForeignKey('usuarios.Usuario', on_delete=models.SET_NULL, null=True, blank=True, related_name='decisiones_cotizacion', verbose_name='Usuario Decisión')
+    fecha_decision = models.DateTimeField('Fecha de decisión', blank=True, null=True)
+    es_decision_automatica = models.BooleanField('Decisión Automática', default=False)
+    
     fecha_actualizacion = models.DateTimeField('Fecha de actualización', auto_now=True)
     
     class Meta:
@@ -110,8 +117,69 @@ class DetalleCotizacion(models.Model):
         self.subtotal = self.calcular_subtotal()
         super().save(*args, **kwargs)
     
+    
     def calcular_subtotal(self):
         """Calcula el subtotal con impuesto incluido"""
         precio_base = self.precio_unitario * self.cantidad
         impuesto_monto = precio_base * (self.impuesto / Decimal('100'))
         return precio_base + impuesto_monto
+
+
+class ReglaOfertaAutomatica(models.Model):
+    """
+    Regla configurada por la empresa para generar ofertas automáticas.
+    """
+    class UnidadTiempo(models.TextChoices):
+        MINUTOS = 'MINUTOS', 'Minutos'
+        HORAS = 'HORAS', 'Horas'
+        DIAS = 'DIAS', 'Días'
+
+    empresa = models.ForeignKey('empresas.Empresa', on_delete=models.CASCADE, related_name='reglas_oferta')
+    orden = models.PositiveIntegerField('Orden', default=1, help_text='Orden de ejecución (1 = primera oferta, 2 = segunda...)')
+    
+    tiempo_espera_valor = models.PositiveIntegerField('Tiempo de espera')
+    tiempo_espera_unidad = models.CharField('Unidad (Espera)', max_length=10, choices=UnidadTiempo.choices, default=UnidadTiempo.HORAS)
+    
+    descuento_porcentaje = models.PositiveIntegerField('Porcentaje Descuento', validators=[MinValueValidator(1)])
+    
+    tiempo_validez_valor = models.PositiveIntegerField('Tiempo de validez')
+    tiempo_validez_unidad = models.CharField('Unidad (Validez)', max_length=10, choices=UnidadTiempo.choices, default=UnidadTiempo.DIAS)
+    
+    class Meta:
+        verbose_name = 'Regla de Oferta Automática'
+        verbose_name_plural = 'Reglas de Oferta Automática'
+        ordering = ['orden']
+        unique_together = ['empresa', 'orden']
+
+    def __str__(self):
+        return f"Regla #{self.orden} - {self.descuento_porcentaje}% ({self.empresa.nombre})"
+
+
+class OfertaCotizacion(models.Model):
+    """
+    Oferta específica generada para una cotización basada en una regla.
+    """
+    class EstadoOferta(models.TextChoices):
+        ACTIVA = 'ACTIVA', 'Activa'
+        VENCIDA = 'VENCIDA', 'Vencida'
+        ACEPTADA = 'ACEPTADA', 'Aceptada'
+        
+    cotizacion = models.ForeignKey(Cotizacion, on_delete=models.CASCADE, related_name='ofertas_automaticas')
+    regla = models.ForeignKey(ReglaOfertaAutomatica, on_delete=models.SET_NULL, null=True, blank=True)
+    
+    fecha_generacion = models.DateTimeField(auto_now_add=True)
+    fecha_vencimiento = models.DateTimeField()
+    descuento_porcentaje = models.PositiveIntegerField()
+    token = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
+    
+    estado = models.CharField(max_length=10, choices=EstadoOferta.choices, default=EstadoOferta.ACTIVA)
+    
+    class Meta:
+        ordering = ['-fecha_generacion']
+        
+    def __str__(self):
+        return f"Oferta {self.descuento_porcentaje}% para {self.cotizacion.numero}"
+
+    @property
+    def es_vigente(self):
+        return self.estado == 'ACTIVA' and timezone.now() <= self.fecha_vencimiento

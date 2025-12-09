@@ -15,7 +15,7 @@ class EmpresaSerializer(serializers.ModelSerializer):
                   'logo', 'logo_url', 'mensaje_autoatencion', 
                   'mensaje_correo_cotizacion', 'mensaje_whatsapp_cotizacion',
                   'slug_autoatencion', 'enlace_autoatencion', 
-                  'autoaprobar_cotizaciones',
+                  'autoaprobar_cotizaciones', 'mensajeria_automatica_activa',
                   'activo', 'fecha_creacion']
         read_only_fields = ['id', 'slug_autoatencion', 'fecha_creacion']
     

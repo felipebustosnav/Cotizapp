@@ -15,8 +15,8 @@ class UsuarioSerializer(serializers.ModelSerializer):
     class Meta:
         model = Usuario
         fields = ['id', 'email', 'username', 'first_name', 'last_name', 'rol', 
-                  'empresa', 'empresa_slug', 'activo', 'password', 'confirm_password', 'fecha_creacion']
-        read_only_fields = ['id', 'fecha_creacion']
+                  'empresa', 'empresa_slug', 'activo', 'password', 'confirm_password', 'fecha_creacion', 'cambio_password_obligatorio']
+        read_only_fields = ['id', 'fecha_creacion', 'cambio_password_obligatorio', 'username']
         extra_kwargs = {
             'password': {'write_only': True},
         }
@@ -32,9 +32,14 @@ class UsuarioSerializer(serializers.ModelSerializer):
         return attrs
     
     def create(self, validated_data):
-        """Crea un nuevo usuario con contraseña hasheada"""
+        """Crea un nuevo usuario con contraseña hasheada y username = email"""
         validated_data.pop('confirm_password', None)
         password = validated_data.pop('password')
+        
+        # Copiar email a username si no viene (aunque es readonly, así que no vendrá)
+        if 'email' in validated_data:
+            validated_data['username'] = validated_data['email']
+            
         usuario = Usuario.objects.create_user(**validated_data)
         usuario.set_password(password)
         usuario.save()
@@ -63,7 +68,23 @@ class UsuarioListSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = Usuario
-        fields = ['id', 'email', 'first_name', 'last_name', 'rol', 'empresa_nombre', 'activo']
+    class Meta:
+        model = Usuario
+        fields = ['id', 'email', 'first_name', 'last_name', 'rol', 'empresa_nombre', 'activo', 'fecha_creacion']
 
     def get_empresa_nombre(self, obj):
         return obj.empresa.nombre if obj.empresa else None
+
+
+class ChangePasswordSerializer(serializers.Serializer):
+    """
+    Serializer para cambio de contraseña.
+    """
+    old_password = serializers.CharField(required=True)
+    new_password = serializers.CharField(required=True, validators=[validate_password])
+    confirm_new_password = serializers.CharField(required=True)
+
+    def validate(self, attrs):
+        if attrs['new_password'] != attrs['confirm_new_password']:
+            raise serializers.ValidationError({"new_password": "Las nuevas contraseñas no coinciden."})
+        return attrs

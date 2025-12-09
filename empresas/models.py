@@ -19,6 +19,7 @@ class Empresa(models.Model):
     mensaje_whatsapp_cotizacion = models.TextField('Mensaje WhatsApp', blank=True, help_text='Mensaje personalizado para el envío por WhatsApp')
     slug_autoatencion = models.SlugField('Slug autoatención', max_length=100, unique=True, blank=True)
     autoaprobar_cotizaciones = models.BooleanField('Auto-aprobar Cotizaciones', default=False, help_text='Aprobar automáticamente cotizaciones recibidas por autoatención')
+    mensajeria_automatica_activa = models.BooleanField('Mensajería Automática Activa', default=False, help_text='Habilitar envío automático de ofertas/fidelización')
     activo = models.BooleanField('Activo', default=True)
     fecha_creacion = models.DateTimeField('Fecha de creación', auto_now_add=True)
     fecha_actualizacion = models.DateTimeField('Fecha de actualización', auto_now=True)
@@ -32,11 +33,22 @@ class Empresa(models.Model):
         return self.nombre
     
     def save(self, *args, **kwargs):
-        """Genera slug único para autoatención si no existe"""
-        if not self.slug_autoatencion:
+        """Genera slug único para autoatención si no existe o si cambia el nombre"""
+        should_generate = not self.slug_autoatencion
+
+        if self.pk:
+            try:
+                old_instance = Empresa.objects.get(pk=self.pk)
+                if old_instance.nombre != self.nombre:
+                    should_generate = True
+            except Empresa.DoesNotExist:
+                pass
+
+        if should_generate:
             base_slug = slugify(self.nombre)
             unique_slug = f"{base_slug}-{uuid.uuid4().hex[:8]}"
             self.slug_autoatencion = unique_slug
+            
         super().save(*args, **kwargs)
     
     def generar_enlace_autoatencion(self):

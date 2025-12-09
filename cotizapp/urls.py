@@ -20,6 +20,7 @@ urlpatterns = [
     path('api/', include('clientes.urls')),
     path('api/', include('cotizaciones.urls')),
     path('api/', include('impuestos.urls')),
+    path('api/', include('solicitudes.urls')),
 ]
 
 # Servir archivos media en desarrollo

@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'cotizaciones',
     'impuestos',
     'reportes',
+    'solicitudes',
 ]
 
 MIDDLEWARE = [
@@ -202,6 +203,7 @@ DEFAULT_FROM_EMAIL = config('DEFAULT_FROM_EMAIL', default='noreply@cotizapp.com'
 
 # Site URL for absolute paths in emails
 SITE_URL = config('SITE_URL', default='http://localhost:8000')
+FRONTEND_URL = config('FRONTEND_URL', default='http://localhost:3000')
 
 # Celery Configuration Options
 CELERY_BROKER_URL = config('CELERY_BROKER_URL', default='redis://localhost:6379/0')
@@ -210,3 +212,11 @@ CELERY_ACCEPT_CONTENT = ['application/json']
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
 CELERY_TIMEZONE = TIME_ZONE
+
+# Celery Beat Schedule
+CELERY_BEAT_SCHEDULE = {
+    'procesar-ofertas-automaticas': {
+        'task': 'cotizaciones.tasks.procesar_ofertas_automaticas',
+        'schedule': 60.0, # Ejecutar cada 60 segundos (1 minuto)
+    },
+}

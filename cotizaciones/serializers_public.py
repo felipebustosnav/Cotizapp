@@ -43,24 +43,36 @@ class PublicCotizacionSerializer(serializers.Serializer):
         empresa = self.context['empresa']
         detalles_data = validated_data.pop('detalles')
         
-        # Crear o obtener cliente
-        cliente, created = Cliente.objects.get_or_create(
-            email=validated_data['cliente_email'],
-            empresa=empresa,
-            defaults={
-                'nombre': validated_data['cliente_nombre'],
-                'telefono': validated_data['cliente_telefono'],
-                'rut': validated_data.get('cliente_rut', ''),
-            }
-        )
+        rut = validated_data.get('cliente_rut', '').strip()
+        email = validated_data['cliente_email']
         
-        # Si el cliente ya existe, actualizar datos
-        if not created:
+        cliente = None
+        
+        # 1. Buscar por RUT (Prioridad Alta)
+        if rut:
+            cliente = Cliente.objects.filter(empresa=empresa, rut=rut).first()
+            
+        # 2. Si no encuentra por RUT, buscar por Email
+        if not cliente:
+            cliente = Cliente.objects.filter(empresa=empresa, email=email).first()
+            
+        if cliente:
+            # Actualizar cliente existente
             cliente.nombre = validated_data['cliente_nombre']
             cliente.telefono = validated_data['cliente_telefono']
-            if validated_data.get('cliente_rut'):
-                cliente.rut = validated_data['cliente_rut']
+            cliente.email = email
+            if rut:
+                cliente.rut = rut
             cliente.save()
+        else:
+            # Crear nuevo cliente
+            cliente = Cliente.objects.create(
+                empresa=empresa,
+                email=email,
+                nombre=validated_data['cliente_nombre'],
+                telefono=validated_data['cliente_telefono'],
+                rut=rut
+            )
         
         # Crear cotización
         cotizacion = Cotizacion.objects.create(

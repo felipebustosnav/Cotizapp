@@ -15,6 +15,7 @@ class Usuario(AbstractUser):
     rol = models.CharField('Rol', max_length=10, choices=Rol.choices, default=Rol.EMPLEADO)
     empresa = models.ForeignKey('empresas.Empresa', on_delete=models.CASCADE, related_name='usuarios', verbose_name='Empresa', null=True, blank=True)
     activo = models.BooleanField('Activo', default=True)
+    cambio_password_obligatorio = models.BooleanField('Cambio de contraseña obligatorio', default=False)
     fecha_creacion = models.DateTimeField('Fecha de creación', auto_now_add=True)
     fecha_actualizacion = models.DateTimeField('Fecha de actualización', auto_now=True)
     

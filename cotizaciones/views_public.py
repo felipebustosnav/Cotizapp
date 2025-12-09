@@ -57,26 +57,26 @@ class PublicCotizacionView(APIView):
             cotizacion = serializer.save()
             
             # Verificar configuración de auto-aprobación
-            if empresa.autoaprobar_cotizaciones and cotizacion.canal_preferencia == 'EMAIL':
-                from .models import Cotizacion  # Importar aquí para evitar circular imports si los hubiera
+            # Solo si es EMAIL y la empresa tiene activado autoaprobar
+            if cotizacion.canal_preferencia == 'EMAIL' and empresa.autoaprobar_cotizaciones:
+                from .models import Cotizacion
+                from django.utils import timezone
+                
                 cotizacion.estado = Cotizacion.Estado.ENVIADA
+                cotizacion.es_decision_automatica = True
+                cotizacion.usuario_decision = None # Decisión del sistema
+                cotizacion.fecha_decision = timezone.now()
                 cotizacion.save()
                 
                 # Enviar correo asíncrono
                 try:
                     from .tasks import enviar_correo_cotizacion
-                    from .utils.pdf_generator import generar_pdf_cotizacion
-                    
-                    # Generar PDF primero (esto podría moverse a la tarea también, pero por ahora lo dejamos aquí para pasar el path)
-                    # O idealmente, la tarea debería encargarse de generar el PDF para no bloquear
-                    # Por simplicidad ahora, pasamos los datos para que la tarea se encargue de todo si refactorizamos
-                    # Pero dado el task actual, vamos a llamar a la tarea con los datos básicos
-                    
-                    # Llamada asíncrona a Celery
                     enviar_correo_cotizacion.delay(cotizacion.id)
-                    
                 except Exception as e:
                     print(f"Error al encolar tarea de correo: {e}")
+            
+            # Caso WhatsApp Público: Siempre queda en Borrador para revisión manual
+            # No hacemos nada extra, ya nace como Borrador.
             
             return Response({
                 'message': 'Cotización creada exitosamente',

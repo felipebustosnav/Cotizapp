@@ -3,6 +3,7 @@ from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.exceptions import ValidationError
+from django.db.models import Q
 from .models import Cliente
 from .serializers import ClienteSerializer, ClienteListSerializer
 from usuarios.permissions import IsAdministrador
@@ -21,12 +22,31 @@ class ClienteViewSet(viewsets.ModelViewSet):
     ordering = ['nombre']
     
     def get_queryset(self):
-        """Filtra clientes por empresa del usuario autenticado"""
-        if self.request.user.is_superuser:
+        """
+        Filtra clientes por empresa.
+        - ADMIN: Ve todos los clientes de la empresa.
+        - EMPLEADO: Ve solo los clientes que él ha atendido (tiene cotización creada por él).
+        """
+        user = self.request.user
+        if not user.is_authenticated:
+            return Cliente.objects.none()
+            
+        if user.is_superuser:
             return Cliente.objects.all()
-        if self.request.user.empresa:
-            return Cliente.objects.filter(empresa=self.request.user.empresa)
-        return Cliente.objects.none()
+            
+        empresa = user.empresa
+        if not empresa:
+            return Cliente.objects.none()
+            
+        if user.rol == 'ADMIN':
+            return Cliente.objects.filter(empresa=empresa)
+            
+        # Caso Empleado: Clientes con cotizaciones creadas por este usuario O autoatención
+        return Cliente.objects.filter(
+            empresa=empresa
+        ).filter(
+            Q(cotizaciones__usuario_creador=user) | Q(cotizaciones__usuario_creador__isnull=True)
+        ).distinct()
     
     def get_serializer_class(self):
         """Usa serializer simplificado para listado"""

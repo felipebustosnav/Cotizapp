@@ -34,7 +34,11 @@ class ProductoViewSet(viewsets.ModelViewSet):
         return ProductoSerializer
     
     def get_permissions(self):
-        """Solo administradores pueden modificar productos"""
+        """
+        Permisos personalizados:
+        - List/Retrieve: Autenticado (Empleados pueden ver)
+        - Create/Update/Destroy: Solo Administradores
+        """
         if self.action in ['create', 'update', 'partial_update', 'destroy']:
             return [permissions.IsAuthenticated(), IsAdministrador()]
         return [permissions.IsAuthenticated()]
