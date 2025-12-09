@@ -329,6 +329,13 @@ const QuotationForm = () => {
                 response = await quotationsService.update(id, payload);
             } else {
                 response = await quotationsService.create(payload);
+                Swal.fire({
+                    title: '¡Cotización Creada!',
+                    text: 'La cotización ha sido creada y enviada exitosamente.',
+                    icon: 'success',
+                    timer: 2000,
+                    showConfirmButton: false
+                });
             }
 
             // Si hay link de WhatsApp (creación interna con canal WhatsApp), abrirlo
